@@ -89,6 +89,7 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
     });
     this.body.addShape(this.shape);
     world.addBody(this.body);
+    this.timer = null;
   }
 
   this.update = function () {
@@ -100,26 +101,32 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
   }
 
   this.mouseover = function () {
-    let movementX = movement.x;
-    let movementY = movement.y;
-    if (movementX > 50) {
-      movementX = 50;
-    } else if (movementX < -50) {
-      movementX = -50;
+    if (!this.timer) {
+      let movementX = movement.x;
+      let movementY = movement.y;
+      if (movementX > 50) {
+        movementX = 50;
+      } else if (movementX < -50) {
+        movementX = -50;
+      }
+
+      if (movementY > 50) {
+        movementY = 50;
+      } else if (movementY < -50) {
+        movementY = -50;
+      }
+
+      let forceX, forceY;
+      forceX = scale(movementX, -50, 50, -Math.abs(sMin * this.body.position[0]), Math.abs(sMax * this.body.position[0]));
+      forceY = scale(movementY, -50, 50, -sMin * this.body.position[1], -sMax * this.body.position[1]);
+      console.log("Name: " + t + ", x: " + movementX + ", y: " + movementY + ", forceX: " + forceX + ", forceY: " + forceY);
+
+      this.body.applyForce([forceX, forceY]);
+      this.timer = setTimeout(() => {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }, 500);
     }
-
-    if (movementY > 50) {
-      movementY = 50;
-    } else if (movementY < -50) {
-      movementY = -50;
-    }
-
-    let forceX, forceY;
-    forceX = scale(movementX, -50, 50, sMin * this.body.position[0], sMax * this.body.position[0]);
-    forceY = scale(movementY, -50, 50, sMin * this.body.position[1], sMax * this.body.position[1]);
-    console.log("forceX: " + forceX + ", forceY: " + forceY);
-
-    this.body.applyForce([forceX, forceY]);
   }
 
   this.mouseout = function () {
