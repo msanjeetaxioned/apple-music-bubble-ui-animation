@@ -1,4 +1,4 @@
-var data = [
+let data = [
   {name: "Pink", color: 0xff2c55, mass: 0.00075, radius: 0.6, sMin: -1/2, sMax: 1/2},
   {name: "Smashing Pumpkins", color: 0xff0000, mass: 0.0015, radius: 0.75, sMin: -1.5, sMax: 1.5},
   {name: "Weezer", color: 0x006400, mass: 0.001, radius: 0.65, sMin: -1, sMax: 1},
@@ -14,10 +14,10 @@ const scale = (number, inMin, inMax, outMin, outMax) => {
 	return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-var zoom = 100;
-var balls = [];
+const zoom = 100;
+let balls = [];
 
-var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
+const renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, {
   transparent: true, antialias: true
 });
 document.body.appendChild(renderer.view);
@@ -31,16 +31,16 @@ const onMousemove = (event) => {
 const canvas = document.querySelector("canvas");
 canvas.addEventListener("mousemove", onMousemove, false);
 
-var world = new p2.World({gravity: [1, 1]});
-var stage = new PIXI.Container();
+const world = new p2.World({gravity: [1, 1]});
+const stage = new PIXI.Container();
 stage.position.x =  renderer.width/2; // center at origin
 stage.position.y =  renderer.height/2;
 stage.scale.x =  zoom;  // zoom in
 stage.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
 
 //floor
-planeShape = new p2.Plane();
-planeBody = new p2.Body({ position:[0,-1] });
+const planeShape = new p2.Plane();
+const planeBody = new p2.Body({ position:[0,-1] });
 planeBody.addShape(planeShape);
 world.addBody(planeBody);
 
@@ -152,7 +152,7 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
 }
 
 for (var i = 0; i < data.length; i ++) {
-  var ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, data[i].sMin, data[i].sMax, i);
+  const ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, data[i].sMin, data[i].sMax, i);
   balls.push(ball);
 }
 
