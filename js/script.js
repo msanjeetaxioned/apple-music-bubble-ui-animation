@@ -38,16 +38,13 @@ stage.position.y =  renderer.height/2;
 stage.scale.x =  zoom;  // zoom in
 stage.scale.y = -zoom; // Note: we flip the y axis to make "up" the physics "up"
 
-
 //floor
 planeShape = new p2.Plane();
 planeBody = new p2.Body({ position:[0,-1] });
 planeBody.addShape(planeShape);
 world.addBody(planeBody);
 
-
 var Ball = function (t, c, m, r, sMin, sMax, x) {
-
   this.init = function () {
     this.el = new PIXI.Container();
     this.radius = r;
@@ -118,7 +115,7 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
 
       let forceX, forceY;
       forceX = scale(movementX, -50, 50, -Math.abs(sMin * this.body.position[0]), Math.abs(sMax * this.body.position[0]));
-      forceY = scale(movementY, -50, 50, -sMin * this.body.position[1], -sMax * this.body.position[1]);
+      forceY = scale(movementY, -50, 50, Math.abs(sMin * this.body.position[1]), -Math.abs(sMax * this.body.position[1]));
       console.log("Name: " + t + ", x: " + movementX + ", y: " + movementY + ", forceX: " + forceX + ", forceY: " + forceY);
 
       this.body.applyForce([forceX, forceY]);
@@ -129,8 +126,8 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
     }
   }
 
-  this.mouseout = function () {
-  }
+  // this.mouseout = function () {
+  // }
 
   // this.click = function () {
   //   this.radius = this.baseRadius + 0.2;
@@ -150,10 +147,9 @@ var Ball = function (t, c, m, r, sMin, sMax, x) {
 
   this.init.call(this);
   this.circle.mouseover = this.mouseover.bind(this);
-  this.circle.mouseout = this.mouseout.bind(this);
+  // this.circle.mouseout = this.mouseout.bind(this);
   // this.circle.click = this.click.bind(this);
 }
-
 
 for (var i = 0; i < data.length; i ++) {
   var ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, data[i].sMin, data[i].sMax, i);
