@@ -1,14 +1,18 @@
 var data = [
-  {name: "Nine Inch Nails", color: 0xff2c55},
-  {name: "Smashing Pumpkins", color: 0xff0000},
-  {name: "Weezer", color: 0x006400},
-  {name: "Pearl Jam", color: 0x0000ff},
-  {name: "American Analog Set", color: 0xffff00},
-  {name: "Sigur Ros", color: 0xff00ff},
-  {name: "Radiohead", color: 0x00ffff},
-  {name: "Do Make Say Think", color: 0x7fff00},
-  {name: "Godspeed!", color: 0xa52a2a}
-]
+  {name: "Pink", color: 0xff2c55, mass: 0.001, radius: 0.65},
+  {name: "Smashing Pumpkins", color: 0xff0000, mass: 0.0015, radius: 0.75},
+  {name: "Weezer", color: 0x006400, mass: 0.001, radius: 0.65},
+  {name: "Blue", color: 0x0000ff, mass: 0.0005, radius: 0.5},
+  {name: "Yellow", color: 0xffff00, mass: 0.0005, radius: 0.5},
+  {name: "Sigur Ros", color: 0xff00ff, mass: 0.001, radius: 0.65},
+  {name: "Radiohead", color: 0x00ffff, mass: 0.001, radius: 0.64},
+  {name: "Chartreuse", color: 0x7fff00, mass: 0.0015, radius: 0.75},
+  {name: "Godspeed!", color: 0xa52a2a, mass: 0.0025, radius: 1}
+];
+
+const scale = (number, inMin, inMax, outMin, outMax) => {
+	return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
 
 var zoom = 100;
 var balls = [];
@@ -42,11 +46,11 @@ planeBody.addShape(planeShape);
 world.addBody(planeBody);
 
 
-var Ball = function (t, c, r, x) {
+var Ball = function (t, c, m, r, x) {
 
   this.init = function () {
     this.el = new PIXI.Container();
-    this.baseRadius = this.radius = r;
+    this.radius = r;
 
     this.circle = new PIXI.Graphics();
     this.circle.beginFill(c);
@@ -62,7 +66,7 @@ var Ball = function (t, c, r, x) {
     let text = new PIXI.Text(t, {
       fontFamily : 'Arial',
       fontSize: 14,
-      fill : 0xffffff,
+      fill : 0x000,
       align : 'center',
       wordWrap: true
     });
@@ -78,7 +82,7 @@ var Ball = function (t, c, r, x) {
     let startX = x % 2 === 0 ? 2 + r : -2 - r;
     let startY = r - Math.random() * (r * 2);
     this.body = new p2.Body({
-      mass: 0.001,
+      mass: m,
       position: [startX, startY],
       angularVelocity: 0,
       fixedRotation: true
@@ -96,27 +100,24 @@ var Ball = function (t, c, r, x) {
   }
 
   this.mouseover = function () {
-    const movementX = movement.x;
-    const movementY = movement.y;
-    // console.log("x: " + movementX + ",y: " + movementY);
+    let movementX = movement.x;
+    let movementY = movement.y;
+    if (movementX > 50) {
+      movementX = 50;
+    } else if (movementX < -50) {
+      movementX = -50;
+    }
+
+    if (movementY > 50) {
+      movementY = 50;
+    } else if (movementY < -50) {
+      movementY = -50;
+    }
 
     let forceX, forceY;
-    
-    if (movementX < 0) {
-      forceX = -this.body.position[0] / 2;
-    } else if (movementX == 0) {
-      forceX = 0;
-    } else {
-      forceX = this.body.position[0] / 2;
-    }
-
-    if (movementY < 0) {
-      forceY = this.body.position[1] / 2;
-    } else if (movementY == 0) {
-      forceY = 0;
-    } else {
-      forceY = -this.body.position[1] / 2;
-    }
+    forceX = scale(movementX, -50, 50, -this.body.position[0], this.body.position[0]);
+    forceY = scale(movementY, -50, 50, -this.body.position[1], this.body.position[1]);
+    console.log("forceX: " + forceX + ", forceY: " + forceY);
 
     this.body.applyForce([forceX, forceY]);
   }
@@ -124,38 +125,38 @@ var Ball = function (t, c, r, x) {
   this.mouseout = function () {
   }
 
-  this.click = function () {
-    this.radius = this.baseRadius + 0.2;
+  // this.click = function () {
+  //   this.radius = this.baseRadius + 0.2;
 
-    TweenMax.to(this.circle.scale, 0.2, {
-      x: this.radius,
-      y: this.radius,
-      onUpdate: this.updateRadius.bind(this),
-      onComplete: this.updateRadius.bind(this)
-    });
-  }
+  //   TweenMax.to(this.circle.scale, 0.2, {
+  //     x: this.radius,
+  //     y: this.radius,
+  //     onUpdate: this.updateRadius.bind(this),
+  //     onComplete: this.updateRadius.bind(this)
+  //   });
+  // }
 
-  this.updateRadius = function () {
-    this.shape.radius = this.circle.scale.x;
-    this.body.updateBoundingRadius();
-  }
+  // this.updateRadius = function () {
+  //   this.shape.radius = this.circle.scale.x;
+  //   this.body.updateBoundingRadius();
+  // }
 
   this.init.call(this);
   this.circle.mouseover = this.mouseover.bind(this);
   this.circle.mouseout = this.mouseout.bind(this);
-  this.circle.click = this.click.bind(this);
+  // this.circle.click = this.click.bind(this);
 }
 
 
 for (var i = 0; i < data.length; i ++) {
-  var ball = new Ball(data[i].name, data[i].color, 0.5, i);
-  this.balls.push(ball);
+  var ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, i);
+  balls.push(ball);
 }
 
 function animate() {
   world.step(1/60);
 
-  for (var i = 0; i < this.balls.length; i ++) {
+  for (var i = 0; i < balls.length; i ++) {
     balls[i].update();
   }
 
