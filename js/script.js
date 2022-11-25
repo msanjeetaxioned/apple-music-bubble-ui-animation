@@ -1,13 +1,13 @@
 var data = [
-  {name: "Pink", color: 0xff2c55, mass: 0.001, radius: 0.65},
-  {name: "Smashing Pumpkins", color: 0xff0000, mass: 0.0015, radius: 0.75},
-  {name: "Weezer", color: 0x006400, mass: 0.001, radius: 0.65},
-  {name: "Blue", color: 0x0000ff, mass: 0.0005, radius: 0.5},
-  {name: "Yellow", color: 0xffff00, mass: 0.0005, radius: 0.5},
-  {name: "Sigur Ros", color: 0xff00ff, mass: 0.001, radius: 0.65},
-  {name: "Radiohead", color: 0x00ffff, mass: 0.001, radius: 0.64},
-  {name: "Chartreuse", color: 0x7fff00, mass: 0.0015, radius: 0.75},
-  {name: "Godspeed!", color: 0xa52a2a, mass: 0.0025, radius: 1}
+  {name: "Pink", color: 0xff2c55, mass: 0.00075, radius: 0.6, sMin: -1/2, sMax: 1/2},
+  {name: "Smashing Pumpkins", color: 0xff0000, mass: 0.0015, radius: 0.75, sMin: -1.5, sMax: 1.5},
+  {name: "Weezer", color: 0x006400, mass: 0.001, radius: 0.65, sMin: -1, sMax: 1},
+  {name: "Blue", color: 0x0000ff, mass: 0.0005, radius: 0.5, sMin: -1/3, sMax: 1/3},
+  {name: "Yellow", color: 0xffff00, mass: 0.0005, radius: 0.5, sMin: -1/3, sMax: 1/3},
+  {name: "Sigur Ros", color: 0xff00ff, mass: 0.001, radius: 0.65, sMin: -1, sMax: 1},
+  {name: "Radiohead", color: 0x00ffff, mass: 0.001, radius: 0.65, sMin: -1, sMax: 1},
+  {name: "Chartreuse", color: 0x7fff00, mass: 0.0015, radius: 0.75, sMin: -1.5, sMax: 1.5},
+  {name: "Godspeed!", color: 0xa52a2a, mass: 0.0025, radius: 1, sMin: -3, sMax: 3}
 ];
 
 const scale = (number, inMin, inMax, outMin, outMax) => {
@@ -46,7 +46,7 @@ planeBody.addShape(planeShape);
 world.addBody(planeBody);
 
 
-var Ball = function (t, c, m, r, x) {
+var Ball = function (t, c, m, r, sMin, sMax, x) {
 
   this.init = function () {
     this.el = new PIXI.Container();
@@ -115,8 +115,8 @@ var Ball = function (t, c, m, r, x) {
     }
 
     let forceX, forceY;
-    forceX = scale(movementX, -50, 50, -this.body.position[0], this.body.position[0]);
-    forceY = scale(movementY, -50, 50, -this.body.position[1], this.body.position[1]);
+    forceX = scale(movementX, -50, 50, sMin * this.body.position[0], sMax * this.body.position[0]);
+    forceY = scale(movementY, -50, 50, sMin * this.body.position[1], sMax * this.body.position[1]);
     console.log("forceX: " + forceX + ", forceY: " + forceY);
 
     this.body.applyForce([forceX, forceY]);
@@ -149,7 +149,7 @@ var Ball = function (t, c, m, r, x) {
 
 
 for (var i = 0; i < data.length; i ++) {
-  var ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, i);
+  var ball = new Ball(data[i].name, data[i].color, data[i].mass, data[i].radius, data[i].sMin, data[i].sMax, i);
   balls.push(ball);
 }
 
